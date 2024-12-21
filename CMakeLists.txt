@@ -1,5 +1,19 @@
 cmake_minimum_required(VERSION 3.15)
 
+add_library(freertos_config INTERFACE)
+
+target_include_directories(freertos_config SYSTEM
+    INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_compile_definitions(freertos_config
+    INTERFACE
+        projCOVERAGE_TEST=0
+)
+
+set(FREERTOS_CONFIG_FILE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE STRING "Path to FreeRTOSConfig.h")
+
 # User is responsible to one mandatory option:
 #   FREERTOS_PORT, if not specified and native port detected, uses the native compile.
 #
