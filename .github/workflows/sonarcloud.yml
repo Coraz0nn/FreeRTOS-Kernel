@@ -1,0 +1,41 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: SonarQube Analysis
+    runs-on: macos-latest
+    env:
+      BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory for build-wrapper output
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better analysis relevancy
+
+      - name: Install Build Wrapper
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v4
+
+      - name: Run Build Wrapper
+        run: |
+          mkdir -p build
+          cmake -S . -B build
+          build-wrapper-macosx-x86 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Release
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+        with:
+          args: >
+            --define sonar.projectKey=Coraz0nn_FreeRTOS-Kernel
+            --define sonar.organization=ton_organisation
+            --define sonar.host.url=https://sonarcloud.io
+            --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
+            --define sonar.sources=.
+            --define sonar.exclusions=**/tests/**,**/*.md,**/docs/**
