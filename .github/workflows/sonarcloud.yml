@@ -34,7 +34,7 @@ jobs:
         with:
           args: >
             --define sonar.projectKey=Coraz0nn_FreeRTOS-Kernel
-            --define sonar.organization=ton_organisation
+            --define sonar.organization=coraz0nn
             --define sonar.host.url=https://sonarcloud.io
             --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
             --define sonar.sources=.
